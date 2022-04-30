@@ -1,4 +1,9 @@
 {
+    "gridSize": [12,12],
+    "totalMoves" : 60,
+    "totalHoles" : 5,
+    "lives": 3,
+    "gridMultiplyer": [5,2] ,
     "chars": {
         "player1": "🤵",
         "player2": "🐕‍🦺",
@@ -24,13 +29,13 @@
             "allowedMoves" : {
                 "N" : {
                     "moves": {
-                        "newNs": -1,
+                        "newNs": 1,
                         "newEw": 0
                     }
                 },
                 "S" : {
                     "moves": {
-                        "newNs": 1,
+                        "newNs": -1,
                         "newEw": 0
                     }
                 },
@@ -143,9 +148,5 @@
             "bat" : 2,
             "zombie" : 1
         }
-    ],
-    "gridSize": [20,10],
-    "totalMoves" : 60,
-    "totalHoles" : 5,
-    "lives": 3   
+    ] 
 }

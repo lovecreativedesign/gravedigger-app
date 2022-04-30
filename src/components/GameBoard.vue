@@ -1,35 +1,38 @@
 <template>
     <h3 class="subtitle" >{{message}}</h3>
-    <div class="grid" >
-        <div v-for="(gridItemRow, gridItemIdx) in this.grid" :key="gridItemIdx" class="grid-row" >
-            <span :className="'grid-item ' + getIconClass(gridItem)" v-for="(gridItem, itemIdx) in gridItemRow" :key="itemIdx">
-                {{gridItem}}
-            </span>
-        </div>
-    </div>
-    <div class="section pt-1 columns" >
-        
-        <div v-if="!playerHasMoved && isPlaying" class="column is-half has-text-left" >
-            <p>Move {{movesMade+1}}</p>
-            <div class="buttons has-addons">
-                <button class="button is-danger" @click="movePlayer('N')" >North</button>
-                <button class="button is-info" @click="movePlayer('S')" >South</button>
-                <button class="button is-primary has-text-dark" @click="movePlayer('E')" >East</button>
-                <button class="button is-warning" @click="movePlayer('W')" >West</button>
+    <div class="section p-1 columns" >
+        <div class="grid column is-half" >
+            <div v-for="(gridItemRow, gridItemIdx) in this.grid" :key="gridItemIdx" class="grid-row" >
+                <span :className="'grid-item ' + getIconClass(gridItem)" v-for="(gridItem, itemIdx) in gridItemRow" :key="itemIdx">
+                    {{gridItem}}
+                </span>
             </div>
         </div>
-        <div v-if="playerHasMoved && currentHoles < totalHoles && isPlaying" class="column is-half has-text-left" >
-            <p>Do you wish to dig a hole?</p>
-            <div class="buttons has-addons">
-                <button class="button is-primary has-text-dark" @click="digHole('Y')" >Yes</button>
-                <button class="button is-warning" @click="digHole('N')" >No</button>
-            </div>
-        </div>
-        <div class="column is-half is-right has-text-right" >
-            <p class="has-text-4" >Level: {{level}}</p>
-            <p class="has-text-4" >Lives: <span v-for="(life) in player1.lives" :key="life" >❤️</span></p>
-            <p :className="(totalMoves -(movesMade+1) <= 10) ? 'is-size-3 has-text-danger' : 'is-size-4'" >{{totalMoves -(movesMade+1)}} minutes until midnight! 🕰️</p>
-            <p class="has-text-4" >{{totalHoles - holeCount}} holes you can dig 🕳️</p>
+        <div class="column is-half has-text-left" >
+            
+                <div v-if="!playerHasMoved && isPlaying" class="has-text-left mb-3" >
+                    <p>Move {{movesMade+1}}</p>
+                    <div class="buttons has-addons">
+                        <button class="button is-danger" @click="movePlayer('N')" >North</button>
+                        <button class="button is-info" @click="movePlayer('S')" >South</button>
+                        <button class="button is-primary has-text-dark" @click="movePlayer('E')" >East</button>
+                        <button class="button is-warning" @click="movePlayer('W')" >West</button>
+                    </div>
+                </div>
+                <div v-if="playerHasMoved && currentHoles < totalHoles && isPlaying" class="has-text-left mb-3" >
+                    <p>Do you wish to dig a hole?</p>
+                    <div class="buttons has-addons">
+                        <button class="button is-primary has-text-dark" @click="digHole('Y')" >Yes</button>
+                        <button class="button is-warning" @click="digHole('N')" >No</button>
+                    </div>
+                </div>
+                <div class="has-text-right" >
+                    <p class="has-text-4" >Level: {{level}}</p>
+                    <p class="has-text-4" >Lives: <span v-for="(life) in player1.lives" :key="life" >❤️</span></p>
+                    <p :className="(totalMoves -(movesMade+1) <= 10) ? 'is-size-3 has-text-danger' : 'is-size-4'" >{{totalMoves -(movesMade+1)}} minutes until midnight! 🕰️</p>
+                    <p class="has-text-4" >{{totalHoles - holeCount}} holes you can dig 🕳️</p>
+                </div>
+            
         </div>
     </div>
     <div :className="'modal' + ((!isPlaying) ? ' is-active' : '')" >
@@ -38,7 +41,7 @@
             <p>{{message}}</p>
             <p>Do you want to play again??</p>
             <button class="button is-large" aria-label="play-again" @click="resetGame" >Play Again?</button>
-        </div>        
+        </div>
     </div>
 </template>
 <script>
@@ -88,8 +91,8 @@ export default {
         },
         buildGrid() {
             
-            this.gridSize[0] = (this.level > 1 && this.level < 4) ? this.gridSize[0]+5 : this.gridSize[0];
-            this.gridSize[1] = (this.level > 1 && this.level < 4) ? this.gridSize[1]+5 : this.gridSize[1];
+            this.gridSize[0] = (this.level > 1 && this.level < 4) ? this.gridSize[0]+setup.gridMultiplyer[0] : this.gridSize[0];
+            this.gridSize[1] = (this.level > 1 && this.level < 4) ? this.gridSize[1]+setup.gridMultiplyer[1] : this.gridSize[1];
             console.log('setup.gridSize', this.gridSize);
             /// Build Empty Grid
             for(let i=0; i<this.gridSize[0]; i++) {
@@ -474,6 +477,18 @@ export default {
                 
                 //// Check Skel, bat etc by type....
                 switch(true){
+                    case (this.player1.currentNorthSouth <= newNs)
+                    && enemy.type === 'skeleton'
+                    && this.directionMoved === 'N' 
+                    && !fObsticles.includes(this.grid[parseInt(newNs-1)][newEw]):
+                        newNs--;
+                        break;
+                    case (this.player1.currentNorthSouth >= newNs)
+                    && enemy.type === 'skeleton'
+                    && this.directionMoved === 'S' 
+                    && !fObsticles.includes(this.grid[parseInt(newNs+1)][newEw]):
+                        newNs++;
+                        break;
                     case (this.player1.currentEastWest >= newEw)
                     && enemy.type === 'skeleton'
                     && this.directionMoved === 'E' 
@@ -597,12 +612,12 @@ export default {
         color: rgba(255, 128, 0, 1);
     }
     .grid { 
-        margin: 40px auto;
+        margin: 0 auto;
     }
     .grid-row {
         display: table;
         padding: 0;
-        margin: auto;
+        margin: 0 auto;
         line-height: 1;
     }
     .grid-item {
