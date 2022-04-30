@@ -32,8 +32,15 @@
                     <p :className="(totalMoves -(movesMade+1) <= 10) ? 'is-size-3 has-text-danger' : 'is-size-4'" >{{totalMoves -(movesMade+1)}} minutes until midnight! 🕰️</p>
                     <p class="has-text-4" >{{totalHoles - holeCount}} holes you can dig 🕳️</p>
                 </div>
-            
+                <div class="content" >
+                    <h4>About</h4>
+                    <p>This was one of the firt programming books I read and learnt to code basic with... I have since re-adapted using Vue.js :-)</p>
+                    <p>&copy; Alan Ramsey, 1983, Author (Creepy Computer Games)</p>
+                    <p><a class="link is-primary" href="http://www.gamebase64.com/game.php?h=0&id=17555" target="_blank" >C64 ROM</a><br />
+                    <a class="link is-warning" href="http://bbcmicro.co.uk/game.php?id=3136" target="_blank" >Publication</a></p>
+                </div>    
         </div>
+        
     </div>
     <div :className="'modal' + ((!isPlaying) ? ' is-active' : '')" >
         <div class="modal-background"></div>
