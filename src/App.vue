@@ -1,26 +1,47 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1 class="is-1" >GraveDigger</h1>
+  <GameBoard />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import GameBoard from './components/GameBoard.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    GameBoard
   }
 }
 </script>
 
 <style>
+@keyframes colorME {
+  0% { color: #00d1b2 !important; text-shadow: 0 0 5px rgba(255, 128, 0, 0.84); }
+  30% { color: #ffe08a !important; text-shadow: 0 0 5px rgba(234, 255, 0, 0.779); }
+  58% { color: #3e8ed0 !important; text-shadow: 0 0 5px rgba(255, 0, 234, 0.779);  }
+  100% { color: #f14668 !important; text-shadow: 0 0 5px rgba(40, 255, 0, 0.779);  }
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Creepster', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  padding: 40px;
+  background: black;
+  color: ghostwhite;
+}
+#app h1 {
+  font-size: 3em;
+  animation-name: colorME;
+  animation-duration: 15s;
+  animation-delay: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: step-start; 
+}
+@media screen and (max-width: 614px) {
+  #app {
+    padding: 10px;
+  }
 }
 </style>
