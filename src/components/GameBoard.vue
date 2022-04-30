@@ -12,7 +12,7 @@
             
                 <div v-if="!playerHasMoved && isPlaying" class="has-text-left mb-3" >
                     <p>Move {{movesMade+1}}</p>
-                    <div class="buttons has-addons">
+                    <div class="buttons has-addons is-justify-content-center">
                         <button class="button is-danger" @click="movePlayer('N')" >North</button>
                         <button class="button is-info" @click="movePlayer('S')" >South</button>
                         <button class="button is-primary has-text-dark" @click="movePlayer('E')" >East</button>
@@ -21,7 +21,7 @@
                 </div>
                 <div v-if="playerHasMoved && currentHoles < totalHoles && isPlaying" class="has-text-left mb-3" >
                     <p>Do you wish to dig a hole?</p>
-                    <div class="buttons has-addons">
+                    <div class="buttons has-addons is-justify-content-center">
                         <button class="button is-primary has-text-dark" @click="digHole('Y')" >Yes</button>
                         <button class="button is-warning" @click="digHole('N')" >No</button>
                     </div>
@@ -601,6 +601,7 @@ export default {
         },
         resetGame(){       
             Object.assign(this.$data, this.initialState());
+            this.level = 1;
             this.buildGrid();
         }
         
@@ -617,6 +618,8 @@ export default {
     .subtitle {
         min-height: 26px; 
         color: rgba(255, 128, 0, 1);
+        margin-top: -12px;
+        position: relative;
     }
     .grid { 
         margin: 0 auto;
@@ -643,11 +646,38 @@ export default {
         animation-timing-function: ease-in-out;
     }
 
-    @media screen and (max-width:614px) {
-        .grid-item {
-            width: 17px;
-            height: auto;
-            font-size: 14px;
+    .grid-item.bat {
+        animation-name: skelebone;
+        animation-duration: 2.5s;
+        animation-delay: 0.35s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in;
+    }
+
+    .grid-item.zombie {
+        animation-name: skelebone;
+        animation-duration: 7.5s;
+        animation-delay: 0.35s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+    }
+    
+    @media screen and (max-width:768px) {
+        .column .has-text-left,
+        .column .has-text-right,
+        .content {
+            text-align: center !important;
         }
     }
+
+    @media screen and (max-width:614px) {
+        .grid-item {
+            width: 19px;
+            height: auto;
+            font-size: 16px;
+        }
+        
+    }
+
+    
 </style>
