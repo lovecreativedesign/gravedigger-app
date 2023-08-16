@@ -1,44 +1,53 @@
 <template>
     <h3 class="subtitle" >{{message}}</h3>
     <div class="section p-1 columns" >
-        <div class="grid column is-half" >
+        <div class="grid column is-two-thirds justify-content-left" >
             <div v-for="(gridItemRow, gridItemIdx) in this.grid" :key="gridItemIdx" class="grid-row" >
-                <span :className="'grid-item ' + getIconClass(gridItem)" v-for="(gridItem, itemIdx) in gridItemRow" :key="itemIdx">
+                <span :className="'is-relative grid-item ' + getIconClass(gridItem)" v-for="(gridItem, itemIdx) in gridItemRow" :key="itemIdx">
+                    <span class="p-1 has-text-danger is-block is-overlay has-background-white" v-if="debug && (gridItem === '🧱' || gridItem === '#') && itemIdx > 0 && itemIdx < gridItemRow.length-1"     >
+                        {{itemIdx}}
+                    </span>
+                    <span class="p-1 has-text-danger is-block is-overlay has-background-white" v-if="debug && (gridItem === '🧱' || gridItem === '#') && gridItemIdx > 0 && gridItemIdx < grid.length-1" >
+                        {{gridItemIdx}}
+                    </span>
                     {{gridItem}}
                 </span>
             </div>
+            <div v-if="!playerHasMoved && isPlaying" class="has-text-left mt-4 mb-3" >                
+                <div class="buttons has-addons is-justify-content-center">
+                    <button class="button is-danger" @click="movePlayer('N')" >North</button>
+                    <button class="button is-info" @click="movePlayer('S')" >South</button>
+                    <button class="button is-primary has-text-dark" @click="movePlayer('E')" >East</button>
+                    <button class="button is-warning" @click="movePlayer('W')" >West</button>
+                </div>
+            </div>
+            <div v-if="playerHasMoved && currentHoles < totalHoles && isPlaying" class="has-text-center mt-4 mb-3" >
+                <p class="py-2">Do you wish to dig a hole?</p>
+                <div class="buttons has-addons is-justify-content-center">
+                    <button class="button is-primary has-text-dark" @click="digHole('Y')" >Yes</button>
+                    <button class="button is-warning" @click="digHole('N')" >No</button>
+                </div>
+            </div>
         </div>
-        <div class="column is-half has-text-left" >
+        <div class="column is-one-third has-text-left" >  
             
-                <div v-if="!playerHasMoved && isPlaying" class="has-text-left mb-3" >
-                    <p>Move {{movesMade+1}}</p>
-                    <div class="buttons has-addons is-justify-content-center">
-                        <button class="button is-danger" @click="movePlayer('N')" >North</button>
-                        <button class="button is-info" @click="movePlayer('S')" >South</button>
-                        <button class="button is-primary has-text-dark" @click="movePlayer('E')" >East</button>
-                        <button class="button is-warning" @click="movePlayer('W')" >West</button>
-                    </div>
-                </div>
-                <div v-if="playerHasMoved && currentHoles < totalHoles && isPlaying" class="has-text-left mb-3" >
-                    <p>Do you wish to dig a hole?</p>
-                    <div class="buttons has-addons is-justify-content-center">
-                        <button class="button is-primary has-text-dark" @click="digHole('Y')" >Yes</button>
-                        <button class="button is-warning" @click="digHole('N')" >No</button>
-                    </div>
-                </div>
-                <div class="has-text-right" >
-                    <p class="has-text-4" >Level: {{level}}</p>
-                    <p class="has-text-4" >Lives: <span v-for="(life) in player1.lives" :key="life" >❤️</span></p>
-                    <p :className="(totalMoves -(movesMade+1) <= 10) ? 'is-size-3 has-text-danger' : 'is-size-4'" >{{totalMoves -(movesMade+1)}} minutes until midnight! 🕰️</p>
-                    <p class="has-text-4" >{{totalHoles - holeCount}} holes you can dig 🕳️</p>
-                </div>
-                <div class="content" >
-                    <h4>About</h4>
-                    <p>This was one of the firt programming books I read and learnt to code basic with... I have since re-adapted using Vue.js :-)</p>
-                    <p>&copy; Alan Ramsey, 1983, Author (Creepy Computer Games)</p>
-                    <p><a class="link is-primary" href="http://www.gamebase64.com/game.php?h=0&id=17555" target="_blank" >C64 ROM</a><br />
-                    <a class="link is-warning" href="http://bbcmicro.co.uk/game.php?id=3136" target="_blank" >Publication</a></p>
-                </div>    
+            <div class="has-text-left" >
+                <p>Move {{movesMade+1}}</p>
+                <p class="has-text-4" >Level: {{level}}</p>
+                <p class="has-text-4" >Lives: <span v-for="(life) in player1.lives" :key="life" >❤️</span></p>
+                <p :className="(totalMoves -(movesMade+1) <= 10) ? 'is-size-3 has-text-danger' : 'is-size-4'" >{{totalMoves -(movesMade+1)}} minutes until midnight! 🕰️</p>
+                <p class="has-text-4" >{{totalHoles - holeCount}} holes you can dig 🕳️</p>
+            </div>
+
+            <div class="content mt-6" >
+                <h4>About</h4>
+                <p>Version {{ version }}</p>
+                <p>This was one of the firt programming books I read and learnt to code basic with... I have since re-adapted using Vue.js :-)</p>
+                <p>&copy; Alan Ramsey, 1983, Author (Creepy Computer Games)</p>
+                <p><a class="link is-primary" href="http://www.gamebase64.com/game.php?h=0&id=17555" target="_blank" >C64 ROM</a><br />
+                <a class="link is-warning" href="http://bbcmicro.co.uk/game.php?id=3136" target="_blank" >Publication</a></p>
+            </div>
+
         </div>
         
     </div>
@@ -54,6 +63,7 @@
 <script>
 import setup from '@/config/setup.json'
 import testScript from '@/functions/test.js'
+import enemyActions from '@/functions/enemyActions.js'
 export default {
     name: 'GameBoard',
     props: {
@@ -64,14 +74,25 @@ export default {
     mounted() {
         console.log('setup', setup, this);
         testScript.testFunc();
+        setup.chars = this.debug ?  setup.debugChars : setup.chars;
+        this.version = setup.version;
         this.buildGrid();
         addEventListener('keyup', this.keyUp);
     },
     methods: {
+        getGridABC(idx) {
+            return String.fromCharCode(idx + 64);
+        },
         initialState(){
             return {
+                version: "1.2.0",
+                sGridC: 0, 
+                debug: false,
+                debugGravesOff: false,
+                debugGrid: false,                
                 message: '',
                 grid: [],
+                graveyard: [], /// For remembering where gravestones are...
                 level: 1,
                 movesMade: 0,
                 totalMoves: setup.totalMoves,
@@ -98,74 +119,102 @@ export default {
         },
         buildGrid() {
             
-            this.gridSize[0] = (this.level > 1 && this.level < 4) ? this.gridSize[0]+setup.gridMultiplyer[0] : this.gridSize[0];
-            this.gridSize[1] = (this.level > 1 && this.level < 4) ? this.gridSize[1]+setup.gridMultiplyer[1] : this.gridSize[1];
+            //this.gridSize[0] = (this.level > 1 && this.level < 4) ? this.gridSize[0]+setup.gridMultiplyer[0] : this.gridSize[0];
+            //this.gridSize[1] = (this.level > 1 && this.level < 4) ? this.gridSize[1]+setup.gridMultiplyer[1] : this.gridSize[1];
             console.log('setup.gridSize', this.gridSize);
+            this.sGridC = this.gridSize[1];
+
+            let min = 0;
+            let max = setup.chars.wall.length-1;
+            let random_wall = 0;
+            let random_walla = 0;
+
             /// Build Empty Grid
-            for(let i=0; i<this.gridSize[0]; i++) {
+            for(let i=0; i<this.gridSize[0]; i++) {                
+                
+                random_walla = Math.floor(Math.random() * (max - min + 1) + min); Math.random(0, 1);
                 this.grid[i] = [];
+
                 for(let j = 0; j<this.gridSize[1]; j++) {
                     
                     this.grid[i][j] = setup.chars.openGround;
+                    
+                    let min = 0;
+                    let max = setup.chars.wall.length-1;
+                    random_wall = Math.floor(Math.random() * (max - min + 1) + min); Math.random(0, 1);
 
                     /// Build the Horizontal Wall Top
-                    this.grid[0][j] = setup.chars.wall;
+                    this.grid[0][j] = setup.chars.wall[random_wall];
                     if(i === this.gridSize[0]-1) {
                         console.log('i', i, setup.gridSize[0]-1)
                         /// Build the Horizontal Wall Below
-                        this.grid[this.gridSize[0]-1][j] = setup.chars.wall;
+                        this.grid[this.gridSize[0]-1][j] = setup.chars.wall[random_wall];
                     }
                     
                 }            
                 
                 /// Build the Varticle Wall
-                this.grid[i][0] = setup.chars.wall;
-                this.grid[i][this.gridSize[1]-1] = setup.chars.wall;
+                this.grid[i][0] = setup.chars.wall[random_walla];
+                this.grid[i][this.gridSize[1]-1] = setup.chars.wall[random_walla];
                 
             }
 
             /// TODO: Make Exit Random
             this.grid[this.gridSize[0]-2][this.gridSize[1]-1] = setup.chars.exit;
 
-            /// Plant some gravestones...
-            /// between 1x1 and 9x19 etc 
-            for(let g=0;g<this.gridSize[1];g++){
-                let f = Math.floor(Math.random() * (this.gridSize[0]-3) + 2);
-                let g = Math.floor(Math.random() * (this.gridSize[1]-5) + 3);
-                this.grid[f][g] = setup.chars.gravestone;
+            if(!this.debugGravesOff) {
+                /// Plant some gravestones...
+                /// between 1x1 and 9x19 etc 
+                for(let g=0;g<this.gridSize[1];g++){
+                    let f = Math.floor(Math.random() * (this.gridSize[0]-3) + 2);
+                    let g = Math.floor(Math.random() * (this.gridSize[1]-5) + 3);
+                    this.grid[f][g] = setup.chars.gravestone;
+                }
             }
-
+            
             /// Add Some Skelebones, Bats etc...
             this.setupEnemies();
 
             this.grid[1][1] = setup.chars.player1;
-            //// ---- Do an enemy test.... this.grid[2][2] = setup.chars.deadEnemy;
 
-            console.log('level', this.level, 'grid', this.grid, this.skeletons);
+            /// Remember where our gravestones are in case a bat flies over...
+            //let graveyard = Object.assign({}, this.grid); 
+            //this.graveyard = {...graveyard};
+            this.graveyard = JSON.parse(JSON.stringify(this.grid));
+            //// ---- Do an enemy test.... this.grid[2][2] = setup.chars.deadEnemy;
+            console.log('level', this.level, 'grid', this.grid, this.graveyard);
+            console.log('--------+++++++++---- SET UP COMPLETE ----++++++++++-------');
 
         },
         setupEnemies(){
             let lastPos = [];
+
             console.log(Object.keys(setup.levels[this.level-1]));
+
             Object.keys(setup.levels[this.level-1]).forEach((enemyType) => {
+
                 console.log(enemyType, setup.levels[this.level-1][enemyType]);
+
                 for(let s=0;s<setup.levels[this.level-1][enemyType];s++){                
-                    let {...enemy} = setup.enemies[enemyType].defaults;
+                    let {...enemy} = setup.enemies[enemyType];
+                    ///let {...enemy} = setup.enemies[enemyType].defaults;
                     ///let f = Math.floor(Math.random() * 7 + 2);
                     ///let g = Math.floor(Math.random() * 7 + 2);
                     let f = Math.floor(Math.random() * (this.gridSize[0]-3) + 2);
                     let g = Math.floor(Math.random() * (this.gridSize[1]-5) + 3);
-                    console.log(f, enemy);
+                    console.log('try set enemy: ' + s, '@NS(f)', f, '@EW(g)', g);
+
                     if(lastPos.includes(f)) {
                         s--;
                     } else {
                         enemy.type = enemyType;
-                        enemy.allowedMoves = setup.enemies[enemyType].allowedMoves;                
+                        //enemy.allowedMoves = setup.enemies[enemyType].allowedMoves;                
                         enemy.currentNorthSouth = f;
                         enemy.currentEastWest = g;
-                        console.log(enemy);
+                        enemy.char = setup.chars[enemyType] + (this.debug ? `(${s})` : '');
+                        console.log('set enemy ok : ' + s, 'currentNorthSouth(f): ' + f, 'currentEastWest(g): ' + g, enemy);
                         this.enemies.push(enemy);
-                        this.grid[f][g] = setup.chars[enemyType];
+                        this.grid[f][g] = setup.chars[enemyType] + (this.debug ? `(${s})` : '');
                         lastPos.push(f);
                     }
                 }
@@ -248,7 +297,7 @@ export default {
                     this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.deadEnemy;
                     this.moveEnemies();
                     break;
-                case this.grid[nS][eW] === setup.chars.wall:
+                case setup.chars.wall.includes(this.grid[nS][eW]):
                     this.message = 'A Wall is in your way you cannot go that way';
                     break;
                 case this.grid[nS][eW] === setup.chars.gravestone:
@@ -273,13 +322,24 @@ export default {
             return obsticle;
         },
         makeMove() {
+
             let nS = this.newNorthSouth;
             let eW = this.newEastWest;
-            console.log('Player Move', this.grid[nS][eW]);
             let hasDied = false;
 
-            let thingsThatKillMe = this.enemies.map(el => el.type).filter((value, index, self) => self.indexOf(value) === index);
+            console.log('makeMove called Player Move No: ' + this.movesMade, this.grid[nS][eW], this.enemies);
+
+            let thingsThatKillMe = this.enemies.map(el => el.char).filter((value, index, self) => self.indexOf(value) === index);
+            //let thingsThatKillMe = this.enemies.filter((value, index, self) => self.indexOf(value) === index);
+            //let thingsThatKillMe = this.enemies;
+            
             console.log('thingsThatKillMe', thingsThatKillMe, thingsThatKillMe.includes(this.grid[nS][eW]));
+            console.log('touching....');
+            console.log(this.grid[nS][eW], thingsThatKillMe.includes(this.grid[nS][eW]))
+            console.log(this.grid[nS-1][eW], thingsThatKillMe.includes(this.grid[nS-1][eW]))
+            console.log(this.grid[nS+1][eW], thingsThatKillMe.includes(this.grid[nS+1][eW]))
+            console.log(this.grid[nS][eW-1], thingsThatKillMe.includes(this.grid[nS][eW-1]))
+            console.log(this.grid[nS][eW+1], thingsThatKillMe.includes(this.grid[nS][eW+1]))
             
             switch(true) {
                 case this.grid[nS][eW] === setup.chars.hole:
@@ -287,21 +347,11 @@ export default {
                     this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.openGround;
                     this.grid[nS][eW] = setup.chars.died;
                     hasDied = true;                    
-                    break;
-                case this.grid[nS][eW] === setup.chars.skeleton
-                || this.grid[nS-1][eW] === setup.chars.skeleton
-                || this.grid[nS+1][eW] === setup.chars.skeleton
-                || this.grid[nS][eW-1] === setup.chars.skeleton
-                || this.grid[nS][eW+1] === setup.chars.skeleton:
-                    this.message = 'Oh Dear! You ran into a '+setup.chars.skeleton+' and they ate you up!!';
-                    this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.openGround;
-                    this.grid[nS][eW] = setup.chars.died;
-                    hasDied = true;
-                    break;
-                
+                    break;                       
                 ///case this.grid[nS][eW] !== setup.chars.openGround && this.grid[nS][eW] !== setup.chars.deadEnemy:
                 case thingsThatKillMe.includes(this.grid[nS][eW]):
-                    this.message = 'A '+this.grid[nS][eW]+' ate you up!';
+                    console.log('Oh Dear! You ran into a '+this.grid[nS][eW]+' and they devoured you!');
+                    this.message = 'Oh Dear! You ran into a '+this.grid[nS][eW]+' and they devoured you!';
                     this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.openGround;
                     this.grid[nS][eW] = setup.chars.died;
                     hasDied = true;
@@ -324,7 +374,15 @@ export default {
                     this.moveEnemies();
             }
 
-            if(hasDied && this.player1.lives < 0) {
+            /// Check again have we run into any one...
+            if(thingsThatKillMe.includes(this.grid[nS][eW])) {
+                this.message = 'Oh Dear! You ran into a '+setup.chars[this.grid[nS][eW]]+' and they devoured you!';
+                this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.openGround;
+                this.grid[nS][eW] = setup.chars.died;
+                hasDied = true;
+            }
+
+            if(hasDied && this.player1.lives <= 0) {
                 this.endGame();
             } else if(hasDied) {
                 this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.openGround;
@@ -356,231 +414,27 @@ export default {
                 this.holeCount++;
             }
 
-            /// Check if move ok...
+            /// if move ok...
             this.makeMove();
 
         },
-        moveEnemies(){
-            
-            let obsticles = [
-                setup.chars.wall, 
-                setup.chars.gravestone, 
-                setup.chars.skeleton, 
-                setup.chars.bat, 
-                setup.chars.zombie,
-                setup.chars.werewolf,
-                setup.chars.vampire,
-                setup.chars.ghost,
-                setup.chars.goblin,
-                setup.chars.ogre,
-                setup.chars.exit
-            ];
+        moveEnemies() {
+            this.grid = enemyActions.move(this);
 
-            const newEnemyPositions = this.enemies.map((enemy, i) => {
-                
-                let okMove = true;
-                let newNs = enemy.currentNorthSouth;
-                let newEw = enemy.currentEastWest;
-                enemy.prevNorthSouth = newNs;
-                enemy.prevEastWest = newEw;
-
-                /*
-                const fObsticles = obsticles.map((obsticle) => {
-                    if((enemy.type === 'bat' 
-                    || enemy.type === 'vampire') 
-                    && obsticle === setup.chars.gravestone) {                       
-                        return null;
-                    }
-
-                    return obsticle;
-
-                });
-                */
-
-                const fObsticles = obsticles;
-                let hasDied = false;
-
-                console.log(`++++++++++++++----- enemy ${i} ${enemy.type} ----+++++++++++++`);
-                
-                console.log('this.directionMoved', this.directionMoved, enemy, 'CurrNs: ' + newNs, 'CurrEw: ' + newEw, 'checking...', 
-                fObsticles,
-                'Curr', this.grid[newNs][newEw], 
-                'N', this.grid[newNs-1][newEw], 
-                'S', this.grid[newNs+1][newEw], 
-                'E', this.grid[newNs][newEw+1], 
-                'W', this.grid[newNs][newEw-1]);
-                console.log(enemy.allowedMoves[this.directionMoved]);
-
-                let enDirection = enemy.allowedMoves[this.directionMoved];
-
-
-                if(enemy.type === 'bat') {
-                  /*
-                  enemy.allowedMoves[this.directionMoved].moves.newNs = enemy.allowedMoves[this.directionMoved].moves.newEw;
-                  enemy.allowedMoves[this.directionMoved].moves.newEw = enemy.allowedMoves[this.directionMoved].moves.newNs;
-                  
-                  
-                  enemy.allowedMoves[this.directionMoved].moves.newNs = (enemy.allowedMoves[this.directionMoved].moves.newNs < 0) ? 1 : -1;
-                  enemy.allowedMoves[this.directionMoved].moves.newEw = (enemy.allowedMoves[this.directionMoved].moves.newEw < 0) ? 1 : -1;
-                  */
-
-                  console.log('grid lens', this.grid, this.grid.length-1, this.grid[1].length-1);
-
-                  switch(true) {
-                    case newNs-1 === 0 && newEw+1 === this.grid[1].length-1:
-                      console.log('bat has wall north west!', newNs-1,newEw+1);
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = 1;
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = -1;
-                      break;
-                    case newNs+1 === this.grid.length-1 && newEw+1 === this.grid[1].length-1:
-                      console.log('bat has wall south west!', newNs+1,newEw+1);
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = -1;
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = -1;
-                      break;
-                    case newNs+1 === this.grid.length-1 && newEw-1 === 0:
-                      console.log('bat has wall south west!', newNs+1,newEw-1);
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = -1;
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = 1;
-                      break;
-                    case newNs-1 === 0 && newEw-1 === 0:
-                      console.log('bat has wall north west!', newNs-1,newEw-1);
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = 1;
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = 1;
-                      break;
-                    case newNs-1 === 0:
-                      console.log('bat has wall north!', newNs-1);
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = 1;
-                      break;
-                    case newNs+1 === this.grid.length-1:
-                      console.log('bat has wall South!', newNs+1);
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = -1;
-                      break;
-                    case newEw-1 === 0:
-                      console.log('bat has wall East!', newEw-1);
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = 1;
-                      break;
-                    case newEw+1 === this.grid[1].length-1:
-                      console.log('bat has wall West!', newEw+1);
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = -1;
-                      break;
-                    case this.grid[newNs+enemy.allowedMoves[this.directionMoved].moves.newNs][newEw+enemy.allowedMoves[this.directionMoved].moves.newEw] !== setup.chars.openGround
-                      && this.grid[newNs+enemy.allowedMoves[this.directionMoved].moves.newNs][newEw+enemy.allowedMoves[this.directionMoved].moves.newEw] !== setup.chars.gravestone
-                      && this.grid[newNs+enemy.allowedMoves[this.directionMoved].moves.newNs][newEw+enemy.allowedMoves[this.directionMoved].moves.newEw] !== setup.chars.hole
-                      && this.grid[newNs+enemy.allowedMoves[this.directionMoved].moves.newNs][newEw+enemy.allowedMoves[this.directionMoved].moves.newEw] !== setup.chars.died
-                      && this.grid[newNs+enemy.allowedMoves[this.directionMoved].moves.newNs][newEw+enemy.allowedMoves[this.directionMoved].moves.newEw] !== setup.chars.deadEnemy:
-
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = (enemy.allowedMoves[this.directionMoved].moves.newNs < 0) ? 1 : -1;
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = (enemy.allowedMoves[this.directionMoved].moves.newEw < 0) ? 1 : -1;                     
-                      break;
-
-                  }
-                  /*if(newNs-1 === 0 || newNs+1 === this.grid.length-1){
-                      enemy.allowedMoves[this.directionMoved].moves.newNs = (enemy.allowedMoves[this.directionMoved].moves.newNs < 0) ? 1 : -1;                      
-                  } else if(newEw-1 === 0 || newEw+1 === this.grid[1].length-1) {
-                      enemy.allowedMoves[this.directionMoved].moves.newEw = (enemy.allowedMoves[this.directionMoved].moves.newEw < 0) ? 1 : -1;                    
-                  }*/
-
-                }
-                
-                //// Check Skel, bat etc by type....
-                switch(true){
-                    case (this.player1.currentNorthSouth <= newNs)
-                    && enemy.type === 'skeleton'
-                    && this.directionMoved === 'N' 
-                    && !fObsticles.includes(this.grid[parseInt(newNs-1)][newEw]):
-                        newNs--;
-                        break;
-                    case (this.player1.currentNorthSouth >= newNs)
-                    && enemy.type === 'skeleton'
-                    && this.directionMoved === 'S' 
-                    && !fObsticles.includes(this.grid[parseInt(newNs+1)][newEw]):
-                        newNs++;
-                        break;
-                    case (this.player1.currentEastWest >= newEw)
-                    && enemy.type === 'skeleton'
-                    && this.directionMoved === 'E' 
-                    && !fObsticles.includes(this.grid[parseInt(newNs)][newEw+1]):
-                        newEw++;
-                        break;
-                    case this.directionMoved === 'W'
-                    && enemy.type === 'skeleton'
-                    && (this.movesMade % 3 === 0)
-                    && !fObsticles.includes(this.grid[parseInt(newNs)][newEw-1]): 
-                        newEw--;
-                        break;
-                    //// Defaults....
-                    case !fObsticles.includes(this.grid[parseInt(newNs+enDirection.moves.newNs)][parseInt(newEw+enDirection.moves.newEw)]):
-                        newEw = parseInt(newEw+enDirection.moves.newEw);
-                        newNs = parseInt(newNs+enDirection.moves.newNs);                     
-                        ///newNs--;
-                        break;
-                    default:
-                        okMove = false;
-                }
-                
-                console.log('enemy moves to', newNs, newEw, this.grid[newNs][newEw]);
-                if(this.grid[newNs][newEw] === setup.chars.hole) {
-                    enemy.isTrapped = true;
-                    this.grid[newNs][newEw] = setup.chars.openGround;
-                    console.log('enemy is trapped!', enemy);
-                    this.message = enemy.type + ' fell into a hole!';
-                }
-                
-                /// If Enemy runs into player.... enemy = nom, nom, nom....
-                if(this.grid[newNs][newEw] === setup.chars.player1){
-                    this.message = 'Eek! You ran into a '+ enemy.type + ' and they devoured you!';
-                    ///this.endGame();
-                    hasDied = true;
-                }
-
-                if(okMove) {
+            /// if a bat flew over and there is an empty gap we need to restore the gravestones or we end up with an empty grid.
+            this.grid.forEach((row, i) => {
+                row.forEach((col, j) => {
                     
-                    if(this.grid[newNs][newEw] === setup.chars.gravestone && (enemy.type === 'bat' || enemy.type === 'vampire')) {
-                        this.gravestones.push([newNs, newEw]);
-                        console.log('this.gravestones',this.gravestones);
+                    if(this.debugGrid)
+                        console.log('grid,graveyard compare:',i,j,this.grid[i][j],this.graveyard[i][j]);
+                    
+                    if(this.grid[i][j] === setup.chars.openGround && this.graveyard[i][j] === setup.chars.gravestone) {
+                        this.grid[i][j] = setup.chars.gravestone;
                     }
+                });
+            });    
 
-                    enemy.currentNorthSouth = newNs;
-                    enemy.currentEastWest = newEw;
-
-                }
-                
-                if(hasDied) {
-                    this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.died;
-                    this.player1.currentNorthSouth = 1;
-                    this.player1.currentEastWest = 1;
-                    this.grid[1][1] = setup.chars.player1;
-                    this.player1.lives--;
-                    this.playerHasMoved = false;
-                }
-                
-                console.log('currr.en', enemy);
-                return enemy;
-
-            });
-
-            console.log('newEnemyPositions', newEnemyPositions);
-            
-            newEnemyPositions.forEach((enemy, i) => {
-                if(!enemy.isTrapped) {
-                    this.grid[enemy.prevNorthSouth][enemy.prevEastWest] = setup.chars.openGround;
-                    this.grid[enemy.currentNorthSouth][enemy.currentEastWest] = setup.chars[enemy.type];                    
-                } else {
-                    this.grid[enemy.prevNorthSouth][enemy.prevEastWest] = setup.chars.openGround;
-                    this.grid[enemy.currentNorthSouth][enemy.currentEastWest] = setup.chars.deadEnemy;
-                    delete newEnemyPositions[i];
-                }
-                
-            });
-
-            this.enemies = newEnemyPositions;
-            this.directionMoved = '';
-            console.log('newEnemyPositions', this.enemies);
-            console.log('++++---- This Grid ----++++');
-            console.log(this.grid);
-            console.log('++++---- This Grid ----++++');
-            
-        },
+        },        
         endGame(win = false){
             if(win) {
                 let level = this.level;
@@ -631,11 +485,22 @@ export default {
         line-height: 1;
     }
     .grid-item {
-        display: inline-block;
-        width: 30px;
-        height: 25px;
-        font-size: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        width: 40px;
+        height: 30px;
+        font-size: 20px;
         line-height: 1;
+        background: #020a0a;
+        border: 1px solid #081b00;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .grid-item.exit {
+        background: #020a0a00;
     }
 
     .grid-item.skeleton {
@@ -672,9 +537,9 @@ export default {
 
     @media screen and (max-width:614px) {
         .grid-item {
-            width: 19px;
+            width: 24px;
             height: auto;
-            font-size: 16px;
+            font-size: 12px;
         }
         
     }

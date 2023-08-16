@@ -1,5 +1,6 @@
 {
-    "gridSize": [12,12],
+    "version": "2023.08 1.2.0",
+    "gridSize": [12,14],
     "totalMoves" : 60,
     "totalHoles" : 5,
     "lives": 3,
@@ -9,7 +10,7 @@
         "player2": "🐕‍🦺",
         "gravestone": "🪦",
         "hole": "🕳️",
-        "wall": "🧱",
+        "wall": ["|||||","|||/|","|\\||"],
         "sick": "🤢",
         "skeleton": "💀",
         "bat": "🦇",
@@ -20,120 +21,50 @@
         "goblin":"👺",
         "ogre":"👹",
         "openGround": " ",
-        "died" : "☠️",
-        "exit" : "🚪",
-        "deadEnemy": "💨"
+        "died" : "☠",
+        "exit" : "EXIT",
+        "deadEnemy": "💨",
+        "spawned": "~^~",
+        "unSpawned": "~~"
+    },
+    "debugChars": {
+        "player1": "P",
+        "player2": "p",
+        "gravestone": "+",
+        "hole": "o",
+        "wall": "#",
+        "sick": "~",
+        "skeleton": "s",
+        "bat": "b",
+        "zombie": "z",
+        "werewolf": "w",
+        "vampire": "v",
+        "ghost": "§",
+        "goblin":"gB",
+        "ogre":"oG",
+        "openGround": " ",
+        "died" : "X",
+        "exit" : "E",
+        "deadEnemy": "^",
+        "spawned": "~^~",
+        "unSpawned": "~~"
     },
     "enemies" : {
-        "skeleton": {
-            "allowedMoves" : {
-                "N" : {
-                    "moves": {
-                        "newNs": 1,
-                        "newEw": 0
-                    }
-                },
-                "S" : {
-                    "moves": {
-                        "newNs": -1,
-                        "newEw": 0
-                    }
-                },
-                "E" : {
-                    "moves": {
-                        "newNs": 0,
-                        "newEw": -1
-                    }
-                },
-                "W" : {
-                    "moves": {
-                        "newNs": 0,
-                        "newEw": 1                        
-                    }
-                }
-            },
-            "defaults" : {
-                "currentEastWest": 18,
-                "currentNorthSouth": 0,
-                "prevEastWest": 0,
-                "prevNorthSouth": 0,
-                "isTrapped": false
-            }
-        },
-        "bat": {
-            "allowedMoves" : {
-                "N" : {
-                    "moves": {
-                        "newNs": 1,
-                        "newEw": 1
-                    }
-                },
-                "S" : {
-                    "moves": {
-                        "newNs": -1,
-                        "newEw": -1
-                    }
-                },
-                "E" : {
-                    "moves": {
-                        "newNs": -1,
-                        "newEw": -1
-                    }
-                },
-                "W" : {
-                    "moves": {
-                        "newNs": 1,
-                        "newEw": 1
-                    }
-                }
-            },
-            "defaults" : {
-                "currentEastWest": 17,
-                "currentNorthSouth": 0,
-                "prevEastWest": 0,
-                "prevNorthSouth": 0,
-                "isTrapped": false
-            }
-        },
-        "zombie": {
-            "allowedMoves" : {
-                "N" : {
-                    "moves": {
-                        "newNs": 1,
-                        "newEw": 0
-                    }
-                },
-                "S" : {
-                    "moves": {
-                        "newNs": -2,
-                        "newEw": 0
-                    }
-                },
-                "E" : {
-                    "moves": {
-                        "newNs": 0,
-                        "newEw": -2
-                    }
-                },
-                "W" : {
-                    "moves": {
-                        "newNs": 0,
-                        "newEw": 1                        
-                    }
-                }
-            },
-            "defaults" : {
-                "currentEastWest": 18,
-                "currentNorthSouth": 0,
-                "prevEastWest": 0,
-                "prevNorthSouth": 0,
-                "isTrapped": false
-            }
-        }
+        "skeleton": {},
+        "bat": {},
+        "zombie": {},
+        "werewolf": {},
+        "vampire": {},
+        "ghost": {},
+        "goblin": {},
+        "ogre": {}
     },
     "levels" : [
         {
-            "skeleton" : 3
+            "vampire" : 1
+        },
+        {
+            "skeleton" : 3            
         },
         {
             "skeleton" : 3,
