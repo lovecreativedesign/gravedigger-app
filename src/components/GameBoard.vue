@@ -208,10 +208,18 @@ export default {
                         s--;
                     } else {
                         enemy.type = enemyType;
-                        //enemy.allowedMoves = setup.enemies[enemyType].allowedMoves;                
+                        //enemy.allowedMoves = setup.enemies[enemyType].allowedMoves;
+                        enemy.prevNorthSouth = 0;
+                        enemy.prevEastWest = 0;                
                         enemy.currentNorthSouth = f;
                         enemy.currentEastWest = g;
                         enemy.char = setup.chars[enemyType] + (this.debug ? `(${s})` : '');
+                        enemy.isBlocked = false;
+                        enemy.isTrapped = false;
+                        enemy.okMove = true;
+                        enemy.respawned = false;
+                        enemy.respawnedTo = [];
+                        enemy.spawnHold = 0;
                         console.log('set enemy ok : ' + s, 'currentNorthSouth(f): ' + f, 'currentEastWest(g): ' + g, enemy);
                         this.enemies.push(enemy);
                         this.grid[f][g] = setup.chars[enemyType] + (this.debug ? `(${s})` : '');
@@ -419,7 +427,15 @@ export default {
 
         },
         moveEnemies() {
+
+            console.clear();
+
+            console.log('pre check enemies', this.enemies);
+            
+            //this.grid = enemyActions.move(this);
             this.grid = enemyActions.move(this);
+
+            console.log('doublecheck enemies', this.enemies);
 
             /// if a bat flew over and there is an empty gap we need to restore the gravestones or we end up with an empty grid.
             this.grid.forEach((row, i) => {

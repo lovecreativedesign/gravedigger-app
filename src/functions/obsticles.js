@@ -13,7 +13,6 @@ const obsticles = [
     setup.chars.exit,
     setup.chars.spawned,
     setup.chars.unSpawned,
-    setup.chars.exit,
     /// For debugging
     's(0)',
     's(1)',

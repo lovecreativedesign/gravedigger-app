@@ -25,7 +25,9 @@
         "exit" : "EXIT",
         "deadEnemy": "💨",
         "spawned": "~^~",
-        "unSpawned": "~~"
+        "unSpawned": "~~",
+        "whisp": "§",
+        "boo": "Boo"
     },
     "debugChars": {
         "player1": "P",
@@ -47,7 +49,9 @@
         "exit" : "E",
         "deadEnemy": "^",
         "spawned": "~^~",
-        "unSpawned": "~~"
+        "unSpawned": "~~",
+        "whisp": "§",
+        "boo": "Boo"
     },
     "enemies" : {
         "skeleton": {},
@@ -61,7 +65,7 @@
     },
     "levels" : [
         {
-            "vampire" : 1
+            "ghost" : 1
         },
         {
             "skeleton" : 3            

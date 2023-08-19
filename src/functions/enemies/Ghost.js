@@ -1,30 +1,30 @@
 import obsticles from '../obsticles.js';
 import setup from '@/config/setup';
-class Vampire {
+class Ghost {
 
     allowedMoves = {
         "N" : {
             "moves": {
-                "nS": 1,
+                "nS": 0,
                 "eW": 0
             }
         },
         "S" : {
             "moves": {
-                "nS": -2,
+                "nS": -1,
                 "eW": 0
             }
         },
         "E" : {
             "moves": {
                 "nS": 0,
-                "eW": -2
+                "eW": 0
             }
         },
         "W" : {
             "moves": {
                 "nS": 0,
-                "eW": 1                        
+                "eW": 1
             }
         }
     }
@@ -39,41 +39,51 @@ class Vampire {
     }
     
     init(profile) {
-        
+
+        console.log('z profile', profile);
         Object.assign(this, profile);
 		
     }
 
     move(){   
-        
+
         this.okMove = true;
         console.log('---- is ', this);
-        
-        let filtered_obsticles = obsticles;
+    
+        let filtered_obsticles = obsticles.map((obsticle) => {
+            if(obsticle === setup.chars.gravestone) {
+                return null;
+            }
+            if(obsticle === setup.chars.spawned) {
+                return null;
+            }
+            if(obsticle === setup.chars.unSpawned) {
+                return null;
+            }
+            return obsticle;
+
+        });        
         let enDirection = this.allowedMoves[this.directionMoved];
-                
-        console.log(enDirection, filtered_obsticles);
-        
+               
         //// Check Skel, bat etc by type....
         switch(true){
-            case (this.player1.currentNorthSouth <= this.currentNorthSouth)            
-            && this.directionMoved === 'N' 
+            case (this.player1.currentNorthSouth < this.currentNorthSouth)            
+            && this.directionMoved === 'N'
             && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth-1)][this.currentEastWest]):
                 this.currentNorthSouth--;
                 break;
-            case (this.player1.currentNorthSouth >= this.currentNorthSouth)
-            && this.directionMoved === 'S' 
+            case (this.player1.currentNorthSouth > this.currentNorthSouth)
+            && this.directionMoved === 'S'
             && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth+1)][this.currentEastWest]):
                 this.currentNorthSouth++;
                 break;
-            case (this.player1.currentEastWest >= this.currentEastWest)
-            && this.directionMoved === 'E' 
+            case (this.player1.currentEastWest > this.currentEastWest)
+            && this.directionMoved === 'E'
             && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth)][this.currentEastWest+1]):
                 this.currentEastWest++;
                 break;
-            case (this.player1.currentEastWest <= this.currentEastWest)
+            case (this.player1.currentEastWest < this.currentEastWest)
             && this.directionMoved === 'W'
-            ///&& (this.movesMade % 3 === 0)
             && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth)][this.currentEastWest-1]): 
                 this.currentEastWest--;
                 break;
@@ -88,36 +98,21 @@ class Vampire {
         }
 
         /// select a random place to spawn...
-        let spawn = parseInt(Math.random(0,10) * 10);
-        if(spawn > 7 && !this.respawned) {                       
+        let spawn = parseInt(Math.random(0,8) * 10);
+        if(spawn > 6 && !this.respawned) {                       
                     
-            //let f = Math.floor(Math.random() * (this.gridSize[0]-3) + 2);
-            //let g = Math.floor(Math.random() * (this.gridSize[1]-5) + 3);
-            
-            /// Move the vamp nearer thy player to thee...
-            let nSn = this.player1.currentNorthSouth-2 < 2 ? 2 : this.player1.currentNorthSouth-2;
-            let nSs = this.player1.currentNorthSouth+2 >= this.gridSize[0]-2 ? this.gridSize[0]-2 : this.player1.currentNorthSouth+2;
-            
-            let f = [nSn,nSs];
-            f = f[Math.floor(Math.random() * 2)];
-
-            let eWw = this.player1.currentEastWest-3 < 3 ? 3 : this.player1.currentEastWest-3;
-            let eWe = this.player1.currentEastWest+3 >= this.gridSize[1]-3 ? this.gridSize[1]-3 : this.player1.currentEastWest+3;
-
-            let g = [eWw,eWe];
-            g = g[Math.floor(Math.random() * 2)];
-
+            let f = Math.floor(Math.random() * (this.gridSize[0]-3) + 2);
+            let g = Math.floor(Math.random() * (this.gridSize[1]-5) + 3);
             console.log('try set spawned enemy: ', '@NS(f)', f, '@EW(g)', g);
             
             if(!filtered_obsticles.includes(this.grid[f][g])) {  
-
-                /// TODO: Vampire stays as bat for two rounds then pops back as a Vamp after so many moves.
+                                            
                 console.log('set enemy respawn ok : ', 'currentNorthSouth(f): ' + f, 'currentEastWest(g): ' + g);
                 this.respawned = true;
                 this.respawnedTo = [f,g];
 
-                this.grid[this.prevNorthSouth][this.prevEastWest] = setup.chars.deadEnemy;
-                this.grid[f][g] = setup.chars.bat;
+                this.grid[this.prevNorthSouth][this.prevEastWest] = setup.chars.openGround;
+                this.grid[f][g] = setup.chars.boo;
                 this.currentNorthSouth = f;
                 this.currentEastWest = g;
                 this.okMove = true;
@@ -128,13 +123,14 @@ class Vampire {
         }
                 
         /// if another enemy is already occupying the grid space                
-        this.isBlocked = filtered_obsticles.includes(this.grid[this.currentNorthSouth][this.currentEastWest]); ///!this.respawned && 
+        this.isBlocked = filtered_obsticles.includes(this.grid[this.currentNorthSouth][this.currentEastWest]);
         console.log('is going to be blocked', this.grid[this.currentNorthSouth][this.currentEastWest], filtered_obsticles.includes(this.grid[this.currentNorthSouth][this.currentEastWest]), this.isBlocked);
         
         /// Free up some memory
         delete this.grid;
 
         let updated = {
+            special_char: this.respawned ? setup.chars.boo : null,
             currentNorthSouth: this.currentNorthSouth,
             currentEastWest: this.currentEastWest,
             prevNorthSouth: this.prevNorthSouth,
@@ -152,8 +148,47 @@ class Vampire {
         return updated;
     }
 
-    respawnRule(enemy, grid) {    
-        
+    respawnRule(enemy, grid) {
+
+        /// set me up somewhere new...
+        /*if(enemy?.respawnedTo.length) {	
+            console.log('%crespawn now...','color:yellow');			
+            enemy.currentNorthSouth = enemy.respawnedTo[0];
+            enemy.currentEastWest = enemy.respawnedTo[1];
+
+            grid[enemy.prevNorthSouth][enemy.prevEastWest] = setup.chars.openGround;
+            grid[enemy.respawnedTo[0]][enemy.respawnedTo[1]] = setup.chars.boo;
+
+            console.log(`%cghostie is now a whispie boo... enemy.spawnHold: ${enemy.spawnHold}`, "color:red");
+            
+            ///grid[enemy.prevNorthSouth][enemy.prevEastWest] = setup.chars.openGround;
+            enemy.char = setup.chars.whisp;
+            enemy.isBlocked = true;
+            //enemy.type = "whisp";
+            enemy.respawned = true;
+            enemy.respawnedTo = [];
+            enemy.spawnHold++;
+        } else if(Number.parseInt(enemy.spawnHold) > 0 && Number.parseInt(enemy.spawnHold) <= 3) {
+            /// stay as a whispie (for now...)
+            console.log(`%cghostie stays as a whispie boo enemy.spawnHold: ${enemy.spawnHold}`, "color:yellow");
+            grid[enemy.currentNorthSouth][enemy.currentEastWest] = setup.chars.boo;
+            enemy.respawned = true;
+            enemy.spawnHold++;
+        } else if(Number.parseInt(enemy.spawnHold) > 3) {
+            /// Return whispie to ghostie
+            console.log(`%cwhispie boo returns to ghostie enemy.spawnHold: ${enemy.spawnHold}`, "color:blue");
+            grid[enemy.currentNorthSouth][enemy.currentEastWest] = setup.chars.ghost;
+            enemy.char = setup.chars.ghost;
+            enemy.isBlocked = false;
+            enemy.type = "ghost";
+            enemy.respawned = false;            
+            enemy.spawnHold = 0;					
+        }
+
+        enemy.respawnedTo = [];
+
+        return {enemy:enemy,grid:grid};*/
+
         /// set me up somewhere new...
         if(enemy?.respawnedTo.length) {	
             console.log('%crespawn now...','color:yellow');			
@@ -162,21 +197,16 @@ class Vampire {
             grid[enemy.prevNorthSouth][enemy.prevEastWest] = setup.chars.openGround;
         }
 
-        ///vampire changed to a bat
-        if(Number.parseInt(enemy.spawnHold) === 0) {
-            console.log(`%cvampire is now a batsie enemy.spawnHold: ${enemy.spawnHold}`, "color:red");
-            grid[enemy.respawnedTo[0]][enemy.respawnedTo[1]] = setup.chars.bat;
-            enemy.char = setup.chars.bat;
-            enemy.isBlocked = false;
-            enemy.type = "bat";
-            enemy.respawned = true;
-            enemy.spawnHold++;
-        }
-
+        ///spawn the norms...
+        console.log('%cnormal respawn and reset','color:green');
+        grid[enemy.respawnedTo[0]][enemy.respawnedTo[1]] = setup.chars[enemy.type];
         enemy.respawnedTo = [];
+        enemy.isBlocked = false;
+        enemy.respawned = false;
+        enemy.spawnHold = 0;
+        //enemy.char = setup.chars.boo;
 
         return {enemy:enemy,grid:grid};
-
     }
 }
-export default Vampire;
+export default Ghost;

@@ -1,39 +1,29 @@
 import obsticles from '../obsticles.js';
 class Skeleton {
 
-    grid;
-    directionMoved;
-    movesMade;
-    message;
-    player1;
-    player2;
-    isBlocked = false;
-    isTrapped = false;
-    okMove = false;
-
     allowedMoves = {
         "N" : {
             "moves": {
-                "newNs": 1,
-                "newEw": 0
+                "nS": 1,
+                "eW": 0
             }
         },
         "S" : {
             "moves": {
-                "newNs": -1,
-                "newEw": 0
+                "nS": -1,
+                "eW": 0
             }
         },
         "E" : {
             "moves": {
-                "newNs": 0,
-                "newEw": -1
+                "nS": 0,
+                "eW": -1
             }
         },
         "W" : {
             "moves": {
-                "newNs": 0,
-                "newEw": 1
+                "nS": 0,
+                "eW": 1
             }
         }
     }
@@ -52,65 +42,62 @@ class Skeleton {
 		
     }
 
-    move(enemy, idx, newNs, newEw){   
+    move(){   
         
-        /// Set the previos position to the new position...
-        this.prevNorthSouth = newNs;
-        this.prevEastWest = newEw;
         this.okMove = true;
         console.log('---- is ',this);
-
         let filtered_obsticles = obsticles;
-
-        console.log('obsticles skelly', filtered_obsticles);
-
         let enDirection = this.allowedMoves[this.directionMoved];        
         
         //// Check Skel, bat etc by type....
         switch(true){
-            case (this.player1.currentNorthSouth < newNs)            
+            case (this.player1.currentNorthSouth < this.currentNorthSouth)            
             && this.directionMoved === 'N' 
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs-1)][newEw]):
-                newNs--;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth-1)][this.currentEastWest]):
+                this.currentNorthSouth--;
                 break;
-            case (this.player1.currentNorthSouth > newNs)
+            case (this.player1.currentNorthSouth > this.currentNorthSouth)
             && this.directionMoved === 'S' 
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs+1)][newEw]):
-                newNs++;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth+1)][this.currentEastWest]):
+                this.currentNorthSouth++;
                 break;
-            case (this.player1.currentEastWest > newEw)
+            case (this.player1.currentEastWest > this.currentEastWest)
             && this.directionMoved === 'E' 
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs)][newEw+1]):
-                newEw++;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth)][this.currentEastWest+1]):
+                this.currentEastWest++;
                 break;
             case this.directionMoved === 'W'
             && (this.movesMade % 3 === 0)
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs)][newEw-1]): 
-                newEw--;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth)][this.currentEastWest-1]): 
+                this.currentEastWest--;
                 break;
             //// Defaults....
-            case !filtered_obsticles.includes(this.grid[parseInt(newNs+enDirection.moves.newNs)][parseInt(newEw+enDirection.moves.newEw)]):
-                newEw = parseInt(newEw+enDirection.moves.newEw);
-                newNs = parseInt(newNs+enDirection.moves.newNs);                     
-                ///newNs--;
+            case !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth+enDirection.moves.nS)][parseInt(this.currentEastWest+enDirection.moves.eW)]):
+                this.currentEastWest = parseInt(this.currentEastWest+enDirection.moves.eW);
+                this.currentNorthSouth = parseInt(this.currentNorthSouth+enDirection.moves.nS);                     
+                ///this.currentNorthSouth--;
                 break;
             default:
                 this.okMove = false;
         }
                 
         /// if another enemy is already occupying the grid space                
-        this.isBlocked = filtered_obsticles.includes(this.grid[newNs][newEw]);
-        console.log('is going to be blocked', this.grid[newNs][newEw], filtered_obsticles.includes(this.grid[newNs][newEw]), this.isBlocked);
+        this.isBlocked = filtered_obsticles.includes(this.grid[this.currentNorthSouth][this.currentEastWest]);
+        console.log('is going to be blocked', this.grid[this.currentNorthSouth][this.currentEastWest], filtered_obsticles.includes(this.grid[this.currentNorthSouth][this.currentEastWest]), this.isBlocked);
         
         /// Free up some memory
         delete this.grid;
 
         let updated = {
-            newEw: newEw,
-            newNs: newNs,
+            currentNorthSouth: this.currentNorthSouth,
+            currentEastWest: this.currentEastWest,
+            prevNorthSouth: this.prevNorthSouth,
+            prevEastWest: this.prevEastWest,          
             isBlocked: this.isBlocked,
             isTrapped: this.isTrapped,
-            okMove: this.okMove
+            okMove: this.okMove,
+            respawned: this.respawned,
+            respawnedTo: this.respawnedTo
         };
 
         console.log('UPDATED TO -> ... ', updated);

@@ -2,39 +2,29 @@ import obsticles from '../obsticles.js';
 import setup from '@/config/setup';
 class Zombie {
 
-    grid;
-    directionMoved;
-    movesMade;
-    message;
-    player1;
-    player2;
-    isBlocked = false;
-    isTrapped = false;
-    okMove = false;
-
     allowedMoves = {
         "N" : {
             "moves": {
-                "newNs": 1,
-                "newEw": 0
+                "nS": 1,
+                "eW": 0
             }
         },
         "S" : {
             "moves": {
-                "newNs": -1,
-                "newEw": 0
+                "nS": -1,
+                "eW": 0
             }
         },
         "E" : {
             "moves": {
-                "newNs": 0,
-                "newEw": -1
+                "nS": 0,
+                "eW": -1
             }
         },
         "W" : {
             "moves": {
-                "newNs": 0,
-                "newEw": 1
+                "nS": 0,
+                "eW": 1
             }
         }
     }
@@ -55,56 +45,48 @@ class Zombie {
 		
     }
 
-    move(enemy, idx, newNs, newEw){   
+    move(){   
 
-        console.log('this.movesMade', this.movesMade);
-        
-        /// Set the previos position to the new position...
-        //this.prevNorthSouth = newNs;
-        //this.prevEastWest = newEw;
         this.okMove = true;
-        console.log('---- is ',this, newNs, newEw, this.grid[newNs][newEw]);
-
-        let respawned = false;
-        let respawnedTo = [];       
+        console.log('---- is ', this);
+    
         let filtered_obsticles = obsticles;        
         let enDirection = this.allowedMoves[this.directionMoved];
                
         //// Check Skel, bat etc by type....
         switch(true){
-            case (this.player1.currentNorthSouth <= newNs)            
+            case (this.player1.currentNorthSouth <= this.currentNorthSouth)            
             && this.directionMoved === 'N'
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs-1)][newEw]):
-                newNs--;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth-1)][this.currentEastWest]):
+                this.currentNorthSouth--;
                 break;
-            case (this.player1.currentNorthSouth >= newNs)
+            case (this.player1.currentNorthSouth >= this.currentNorthSouth)
             && this.directionMoved === 'S'
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs+1)][newEw]):
-                newNs++;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth+1)][this.currentEastWest]):
+                this.currentNorthSouth++;
                 break;
-            case (this.player1.currentEastWest >= newEw)
+            case (this.player1.currentEastWest >= this.currentEastWest)
             && this.directionMoved === 'E'
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs)][newEw+1]):
-                newEw++;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth)][this.currentEastWest+1]):
+                this.currentEastWest++;
                 break;
             case this.directionMoved === 'W'
-            && !filtered_obsticles.includes(this.grid[parseInt(newNs)][newEw-1]): 
-                newEw--;
+            && !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth)][this.currentEastWest-1]): 
+                this.currentEastWest--;
                 break;
             //// Defaults....
-            case !filtered_obsticles.includes(this.grid[parseInt(newNs+enDirection.moves.newNs)][parseInt(newEw+enDirection.moves.newEw)]):
-                newEw = parseInt(newEw+enDirection.moves.newEw);
-                newNs = parseInt(newNs+enDirection.moves.newNs);                     
-                ///newNs--;
+            case !filtered_obsticles.includes(this.grid[parseInt(this.currentNorthSouth+enDirection.moves.nS)][parseInt(this.currentEastWest+enDirection.moves.eW)]):
+                this.currentEastWest = parseInt(this.currentEastWest+enDirection.moves.eW);
+                this.currentNorthSouth = parseInt(this.currentNorthSouth+enDirection.moves.nS);                    
+                ///this.currentNorthSouth--;
                 break;
             default:
                 this.okMove = false;
         }
 
-
         /// select a random place to spawn...
         let spawn = parseInt(Math.random(0,8) * 10);
-        if(spawn > 6 && !respawned) {                       
+        if(spawn > 6 && !this.respawned) {                       
                     
             let f = Math.floor(Math.random() * (this.gridSize[0]-3) + 2);
             let g = Math.floor(Math.random() * (this.gridSize[1]-5) + 3);
@@ -112,43 +94,65 @@ class Zombie {
             
             if(!filtered_obsticles.includes(this.grid[f][g])) {  
                                             
-                //enemy.currentNorthSouth = f;
-                //enemy.currentEastWest = g;
-                console.log('set enemy respawn ok : ', 'currentNorthSouth(f): ' + f, 'currentEastWest(g): ' + g, enemy);                        
-                console.log('to pop off,,,', this.enemies[idx]);
-                respawned = true;
-                respawnedTo = [f,g];
+                console.log('set enemy respawn ok : ', 'currentNorthSouth(f): ' + f, 'currentEastWest(g): ' + g);
+                this.respawned = true;
+                this.respawnedTo = [f,g];
 
                 this.grid[this.prevNorthSouth][this.prevEastWest] = setup.chars.unSpawned;
                 this.grid[f][g] = setup.chars.spawned;
-                newNs = f;
-                newEw = g;
+                this.currentNorthSouth = f;
+                this.currentEastWest = g;
                 this.okMove = true;
+                this.spawnHold = 0;
                 
             }
 
         }
                 
         /// if another enemy is already occupying the grid space                
-        this.isBlocked = filtered_obsticles.includes(this.grid[newNs][newEw]);
-        console.log('is going to be blocked', this.grid[newNs][newEw], filtered_obsticles.includes(this.grid[newNs][newEw]), this.isBlocked);
+        this.isBlocked = filtered_obsticles.includes(this.grid[this.currentNorthSouth][this.currentEastWest]);
+        console.log('is going to be blocked', this.grid[this.currentNorthSouth][this.currentEastWest], filtered_obsticles.includes(this.grid[this.currentNorthSouth][this.currentEastWest]), this.isBlocked);
         
         /// Free up some memory
         delete this.grid;
 
         let updated = {
-            newEw: newEw,
-            newNs: newNs,
+            currentNorthSouth: this.currentNorthSouth,
+            currentEastWest: this.currentEastWest,
+            prevNorthSouth: this.prevNorthSouth,
+            prevEastWest: this.prevEastWest,
             isBlocked: this.isBlocked,
             isTrapped: this.isTrapped,
             okMove: this.okMove,
-            respawned: respawned,
-            respawnedTo: respawnedTo
+            respawned: this.respawned,
+            respawnedTo: this.respawnedTo,
+            spawnHold: this.spawnHold
         };
 
         console.log('UPDATED TO -> ... ', updated);
 
         return updated;
+    }
+
+    respawnRule(enemy, grid) {
+
+        /// set me up somewhere new...
+        if(enemy?.respawnedTo.length) {	
+            console.log('%crespawn now...','color:yellow');			
+            enemy.currentNorthSouth = enemy.respawnedTo[0];
+            enemy.currentEastWest = enemy.respawnedTo[1];
+            grid[enemy.prevNorthSouth][enemy.prevEastWest] = setup.chars.openGround;
+        }
+
+        ///spawn the norms...
+        console.log('%cnormal respawn and reset','color:green');
+        grid[enemy.respawnedTo[0]][enemy.respawnedTo[1]] = setup.chars[enemy.type];
+        enemy.respawnedTo = [];
+        enemy.isBlocked = false;
+        enemy.respawned = false;
+        enemy.spawnHold = 0;
+
+        return {enemy:enemy,grid:grid};
     }
 }
 export default Zombie;
