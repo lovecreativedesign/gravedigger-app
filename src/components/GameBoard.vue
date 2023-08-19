@@ -218,6 +218,7 @@ export default {
                         enemy.isTrapped = false;
                         enemy.okMove = true;
                         enemy.respawned = false;
+                        enemy.multiply = false;
                         enemy.respawnedTo = [];
                         enemy.spawnHold = 0;
                         console.log('set enemy ok : ' + s, 'currentNorthSouth(f): ' + f, 'currentEastWest(g): ' + g, enemy);

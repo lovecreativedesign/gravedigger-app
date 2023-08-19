@@ -204,7 +204,6 @@ class Ghost {
         enemy.isBlocked = false;
         enemy.respawned = false;
         enemy.spawnHold = 0;
-        //enemy.char = setup.chars.boo;
 
         return {enemy:enemy,grid:grid};
     }

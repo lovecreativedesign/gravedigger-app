@@ -151,6 +151,7 @@ class Zombie {
         enemy.isBlocked = false;
         enemy.respawned = false;
         enemy.spawnHold = 0;
+        enemy.multiply = parseInt(Math.random(0,8) * 10) > 7;
 
         return {enemy:enemy,grid:grid};
     }

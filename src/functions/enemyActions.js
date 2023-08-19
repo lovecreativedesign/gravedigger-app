@@ -155,6 +155,20 @@ export default {
 
 			enemy.isBlocked = false;
 			///that.enemies[i] = enemy;
+
+			/// If multiplied push another enemey to the screen
+			if(enemy.multiply) {
+				let nEnemy = {...enemy};
+				nEnemy.currentNorthSouth = enemy.prevNorthSouth;
+				nEnemy.currentEastWest = enemy.currentEastWest;
+				nEnemy.multiply = false;
+				nEnemy.isBlocked = true;
+				console.log('%cpushing enemies', 'color:red;background:white');
+				that.enemies.push(nEnemy);
+				that.grid[nEnemy.currentNorthSouth][nEnemy.currentEastWest] = nEnemy.char;
+				enemy.multiply = false;
+				console.log('pushing enemies', that.enemies, nEnemy);
+			}
 			
 			console.log('Enemy now? ', enemy);
 

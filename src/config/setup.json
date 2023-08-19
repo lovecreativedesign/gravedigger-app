@@ -65,7 +65,7 @@
     },
     "levels" : [
         {
-            "ghost" : 1
+            "zombie" : 1
         },
         {
             "skeleton" : 3            
