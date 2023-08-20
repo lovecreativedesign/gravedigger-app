@@ -65,23 +65,42 @@
     },
     "levels" : [
         {
-            "zombie" : 1
-        },
-        {
             "skeleton" : 3            
         },
         {
-            "skeleton" : 3,
+            "skeleton" : 2,
             "bat" : 1
         },
         {
-            "skeleton" : 3,
+            "skeleton" : 2,
             "bat" : 2
         },
         {
             "skeleton" : 2,
-            "bat" : 2,
+            "bat" : 1,
             "zombie" : 1
+        },
+        {
+            "werewolf" : 2,
+            "ghost" : 1
+        },
+        {
+            "skeleton" : 2,
+            "vampire" : 1,
+            "zombie" : 1,
+            "ghost" : 1
+        },
+        {
+            "vampire" : 2,
+            "werewolf" : 1,
+            "zombie" : 1,
+            "ghost" : 2
+        },
+        {
+            "vampire" : 2,
+            "werewolf" : 2,
+            "zombie" : 1,
+            "ghost" : 2
         }
     ] 
 }

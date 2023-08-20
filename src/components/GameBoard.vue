@@ -385,7 +385,16 @@ export default {
 
             /// Check again have we run into any one...
             if(thingsThatKillMe.includes(this.grid[nS][eW])) {
-                this.message = 'Oh Dear! You ran into a '+setup.chars[this.grid[nS][eW]]+' and they devoured you!';
+
+                console.log('thingsThatKillMe', thingsThatKillMe, thingsThatKillMe.includes(this.grid[nS][eW]));
+                console.log('touching....');
+                console.log(this.grid[nS][eW], thingsThatKillMe.includes(this.grid[nS][eW]))
+                console.log(this.grid[nS-1][eW], thingsThatKillMe.includes(this.grid[nS-1][eW]))
+                console.log(this.grid[nS+1][eW], thingsThatKillMe.includes(this.grid[nS+1][eW]))
+                console.log(this.grid[nS][eW-1], thingsThatKillMe.includes(this.grid[nS][eW-1]))
+                console.log(this.grid[nS][eW+1], thingsThatKillMe.includes(this.grid[nS][eW+1]))
+
+                this.message = 'Oh Dear! A '+this.grid[nS][eW]+' ran into you and they devoured you!!!';
                 this.grid[this.player1.currentNorthSouth][this.player1.currentEastWest] = setup.chars.openGround;
                 this.grid[nS][eW] = setup.chars.died;
                 hasDied = true;
@@ -429,7 +438,7 @@ export default {
         },
         moveEnemies() {
 
-            console.clear();
+            //console.clear();
 
             console.log('pre check enemies', this.enemies);
             
@@ -455,10 +464,12 @@ export default {
         endGame(win = false){
             if(win) {
                 let level = this.level;
+                let player = this.player1;
                 console.log('Object.keys(setup.levels).length', level, Object.keys(setup.levels).length);
                 if(this.level < Object.keys(setup.levels).length) {
                     Object.assign(this.$data, this.initialState());
                     this.level = level+1;
+                    this.player1.lives = player.lives;
                     this.message = `...Next Level ${this.level}`;
                     this.buildGrid();   
                 } else {
@@ -554,8 +565,8 @@ export default {
 
     @media screen and (max-width:614px) {
         .grid-item {
-            width: 24px;
-            height: auto;
+            width: 20px;
+            height: 20px;
             font-size: 12px;
         }
         
