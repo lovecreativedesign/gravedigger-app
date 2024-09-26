@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . /app
 
-#VOLUME [ "/app/node_modules" ]
+EXPOSE 8080
+
+#VOLUME [ "./app/node_modules" ]
 
 CMD ["npm", "run", "serve"]
